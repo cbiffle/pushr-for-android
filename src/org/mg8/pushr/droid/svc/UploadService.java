@@ -1,0 +1,163 @@
+package org.mg8.pushr.droid.svc;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.mg8.pushr.droid.ContentWriteable;
+import org.mg8.pushr.droid.ImageStore;
+import org.mg8.pushr.flickr.Flickr;
+import org.mg8.pushr.flickr.FlickrException;
+import org.mg8.pushr.droid.R;
+
+import android.app.Service;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.RemoteException;
+import android.widget.Toast;
+
+public class UploadService extends Service {
+  /*
+   * We manage our own queue instead of using Android's built-in equivalent
+   * because we need to be able to peek into it and quit asynchronously
+   * ("cancel" the queue).
+   */
+  final BlockingQueue<Message> messageQueue =
+      new LinkedBlockingQueue<Message>();
+  final List<IUploadCallback> callbacks =
+      new CopyOnWriteArrayList<IUploadCallback>();
+  
+  volatile boolean threadRunning;
+  private Thread uploadThread;
+  
+  ImageStore imageStore;
+  Flickr flickr;
+  
+  final AtomicLong bytesToSend = new AtomicLong(0), bytesSent = new AtomicLong(0);
+  
+  @Override public void onCreate() {
+    super.onCreate();
+    
+    String apiKey = getString(R.string.api_key);
+    String sharedSecret = getString(R.string.shared_secret);
+    String authToken = getString(R.string.auth_token);
+    
+    if (apiKey == null || sharedSecret == null || authToken == null) {
+      Toast.makeText(this, "Did you forget secrets.xml?", Toast.LENGTH_LONG).show();
+    }
+    
+    imageStore = new ImageStore(getContentResolver());
+    flickr = new Flickr(apiKey, sharedSecret, authToken);
+    
+    threadRunning = true;
+    uploadThread = new Thread(new UploadLoop());
+    uploadThread.start();    
+  }
+
+  @Override
+  public void onDestroy() {
+    threadRunning = false;
+    uploadThread.interrupt();
+    super.onDestroy();
+  }
+
+  @Override
+  public void onStart(Intent intent, int startId) {
+    super.onStart(intent, startId);
+    
+    Message message = Message.obtain();
+    message.obj = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    message.arg1 = startId;
+    
+    bytesToSend.addAndGet(imageStore.getImageSize((Uri) message.obj));
+    messageQueue.offer(message);
+  }
+
+  @Override
+  public IBinder onBind(Intent intent) {
+    return binder;
+  }
+  private final IUploadService.Stub binder = new IUploadService.Stub() {
+    @Override public void registerCallback(IUploadCallback callback)
+        throws RemoteException {
+      callbacks.add(callback);
+    }
+
+    @Override public void removeCallback(IUploadCallback callback) throws RemoteException {
+      callbacks.remove(callback);
+    }};
+  
+  class UploadLoop implements Runnable {    
+    @Override public void run() {
+      while (threadRunning) {
+        try {          
+          Message m = messageQueue.take();
+          Uri uri = (Uri) m.obj;
+          int token = m.arg1;
+    
+          Cursor c = imageStore.getInfo(uri);
+          c.moveToFirst();
+          String name = c.getString(0);
+          c.close();
+          
+          ContentWriteable data = new ContentWriteable(imageStore, uri);
+          data.setProgressListener(progress);
+          currentName = name;
+          Map<String, String> meta = new HashMap<String, String>();
+          
+          try {
+            flickr.pushPhoto(name, data, meta);
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          } catch (FlickrException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          
+          currentName = null;
+          for (IUploadCallback callback : callbacks) {
+            try {
+              callback.statusUpdate(null, 0, 0);
+            } catch (RemoteException e) {
+              e.printStackTrace();
+            }
+          }
+          stopSelf(token);
+        } catch (InterruptedException e) {
+          // Drain queue
+          while (true) {
+            Message m = messageQueue.poll();
+            if (m != null) stopSelf(m.arg1);
+          }
+          // Return to idle state
+        }
+      }
+    }
+    
+  }
+  
+  volatile String currentName;
+  final ContentWriteable.ProgressListener progress =
+      new ContentWriteable.ProgressListener() {
+        @Override public void progressHasBeenMade(long bytes) {
+          long soFar = bytesSent.addAndGet(bytes);
+          long goal = bytesToSend.get();
+          for (IUploadCallback callback : callbacks) {
+            try {
+              callback.statusUpdate(currentName, (int)soFar, (int)goal);
+            } catch (RemoteException e) {
+              e.printStackTrace();
+            }
+          }
+        }};
+  
+}

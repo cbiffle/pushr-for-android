@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, PushPhotos</string>
+    <string name="app_name">Pushr</string>
+<string name="token">Token:</string>
+<string name="upload_error">Flickr has reported an error with your upload (code %d, %s)</string>
+<string name="upload_fail">Your upload failed, probably due to network issues (%s)</string>
+<string name="thanks">Thanks!</string>
+<string name="upload_info">You can follow the progress of your upload in the notification area at the top of your screen.  Press Back to go on about your business.</string>
+<string name="upload_starting">Uploading %s to Flickr...</string>
+<string name="upload_heading">Upload Status</string>
+<string name="uploading">Uploading %s</string>
+<string name="no_upload">No upload in progress.</string>
+</resources>

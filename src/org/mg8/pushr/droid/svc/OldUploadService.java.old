@@ -1,0 +1,155 @@
+package org.mg8.pushr.droid.svc;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.mg8.pushr.droid.ContentWriteable;
+import org.mg8.pushr.droid.ImageStore;
+import org.mg8.pushr.droid.PushPhotos;
+import org.mg8.pushr.droid.R;
+import org.mg8.pushr.flickr.Flickr;
+import org.mg8.pushr.flickr.FlickrException;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.RemoteException;
+import android.provider.MediaStore.Images.ImageColumns;
+import android.util.Log;
+
+public class OldUploadService extends Service {
+  private static final int PROGRESS_NOTE = 1;
+  
+  private Handler uploadThread;
+  private final List<IUploadCallback> callbacks =
+      new CopyOnWriteArrayList<IUploadCallback>();
+  
+  @Override public void onCreate() {
+    super.onCreate();
+    
+    HandlerThread upload = new HandlerThread("Pushr Upload Thread");
+    upload.start();
+    uploadThread = new UploadHandler(upload.getLooper(),
+        new ImageStore(getContentResolver()),
+        new Flickr(Flickr.API_KEY, Flickr.SHARED_SECRET, Flickr.TOKEN),
+        (NotificationManager) getSystemService(NOTIFICATION_SERVICE));
+  }
+
+  @Override public void onStart(Intent intent, int startId) {
+    super.onStart(intent, startId);    
+    
+    Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    
+    Message message = uploadThread.obtainMessage();
+    message.obj = uri;
+    message.arg1 = startId;
+
+    uploadThread.sendMessage(message);
+  }
+
+  @Override public IBinder onBind(Intent intent) {
+    return null;
+  }
+
+  @Override public void onDestroy() {
+    uploadThread.getLooper().quit();
+    super.onDestroy();
+  }
+        
+  class UploadHandler extends Handler {
+    private final ImageStore imageStore;
+    private final Flickr flickr;
+    private final NotificationManager notifications;
+    
+    private String currentFile;
+    
+    public UploadHandler(Looper looper, ImageStore imageStore, Flickr flickr,
+        NotificationManager notifications) {
+      super(looper);
+      this.imageStore = imageStore;
+      this.flickr = flickr;
+      this.notifications = notifications;
+    }
+
+    @Override public void handleMessage(Message msg) {
+      final Uri contentUri = (Uri) msg.obj;
+      Map<String, String> meta = new HashMap<String, String>();
+      
+      Cursor c = imageStore.getInfo(contentUri);
+      c.moveToFirst();
+      currentFile =
+          c.getString(c.getColumnIndexOrThrow(ImageColumns.DISPLAY_NAME));
+      String description =
+          c.getString(c.getColumnIndexOrThrow(ImageColumns.DESCRIPTION));
+      c.close();
+      
+      if (description != null && description.length() > 0) {
+        meta.put(Flickr.META_DESCRIPTION, description);
+      }
+      
+      ContentWriteable image = imageStore.getImageWriteable(contentUri);
+      image.setProgressListener(progressListener);
+      try {
+        notifyUploadStarting(currentFile);
+        flickr.pushPhoto(currentFile, image, meta);
+        notifyUploadCompleted();
+      } catch (final FlickrException e) {
+        notifyUploadFailed(e.getMessage());
+      } catch (final Exception e) {
+        notifyUploadFailed(e.getMessage());
+      }
+      
+      stopSelf(msg.arg1);
+    }
+
+    void notifyUploadStarting(String displayName) {
+      PendingIntent intent = PendingIntent.getActivity(OldUploadService.this, 0,
+          new Intent(OldUploadService.this, PushPhotos.class), 0);
+      Notification notification = new Notification(R.drawable.icon,
+          getString(R.string.upload_starting, displayName), System.currentTimeMillis());
+      notification.setLatestEventInfo(OldUploadService.this, getText(R.string.app_name),
+          getString(R.string.upload_starting, displayName), intent);
+      notification.flags |= Notification.FLAG_ONGOING_EVENT;
+      notifications.notify(PROGRESS_NOTE, notification);
+    }
+
+    void notifyUploadFailed(String message) {
+      PendingIntent intent = PendingIntent.getActivity(OldUploadService.this, 0,
+          new Intent(OldUploadService.this, PushPhotos.class), 0);
+      Notification notification = new Notification(R.drawable.icon,
+          getString(R.string.upload_fail, message), System.currentTimeMillis());
+      notification.setLatestEventInfo(OldUploadService.this, getText(R.string.app_name),
+          getString(R.string.upload_fail, message), intent);
+      notifications.notify(PROGRESS_NOTE, notification);
+    }
+    
+    void notifyUploadCompleted() {
+      notifications.cancel(PROGRESS_NOTE);
+    }
+
+    private final ContentWriteable.ProgressListener progressListener =
+      new ContentWriteable.ProgressListener() {
+        @Override public void progressHasBeenMade(long position, long finish) {
+          for (IUploadCallback callback : callbacks) {
+            try {
+              callback.statusUpdate(currentFile, (int)(position / 1024), (int)(finish / 1024));
+            } catch (RemoteException e) {
+              Log.w("UploadServiceImpl", "Exception in callback: " + e);
+              e.printStackTrace();
+            }
+          }
+        }};
+  }
+  
+}
