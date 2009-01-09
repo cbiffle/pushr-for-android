@@ -1,0 +1,77 @@
+PUSHR - FOR ANDROID
+
+Welcome to the Pushr for Android source tree!  To build this code, there are
+a few things you'll need:
+ 1. Java 1.5 or later.
+ 2. The Android SDK.
+ 3. Ant (1.6+) or Eclipse (3.3+)
+ 4. A Flickr API key and shared secret.
+ 5. For now, a hand-generated Flickr API access token.
+
+
+SETTING UP THE FLICKR API KEY
+
+The Pushr sources do not include the Pushr API key or shared secret, because
+while we're happy to let you build our code, we're less happy to have your
+code masquerading as us as far as Flickr is concerned.  The official Pushr
+API key is used only for official Pushr builds.
+
+To obtain your own for development, see Flickr's developer site -- it's free.
+
+For the moment, Pushr for Android is unable to do the auth handshake and obtain
+an auth token unassisted.  You'll need to do this manually, a process which is
+outside the scope of this document.
+
+Once you have all this info, create a file at res/values/secrets.xml using the
+following template:
+
+  <?xml version="1.0" encoding="utf-8"?>
+  <resources>
+    <string name="api_key">YOUR_API_KEY</string>
+	 <string name="shared_secret">YOUR_SHARED_SECRET</string>
+    <string name="auth_token">YOUR_AUTH_TOKEN</string>
+  </resources>
+
+
+BUILDING WITH ECLIPSE
+
+This assumes Eclipse 3.3 or later, with the Android Developer Tools already
+installed.
+
+ 1. Open Eclipse.
+ 2. Import the sources, using File > Import > Existing Projects Into Workspace.
+ 3. The sources will build automagically.
+
+To run:
+ 1. Open the Run Configurations dialog (Run > Run Configurations...)
+ 2. Choose Android from the list on the left.
+ 3. Click the "New Configuration" button (a little page with a star)
+ 4. Enter the Pushr project name.
+ 5. Click Run.
+ 6. Next time, just choose this configuration (Run > Run History > ...)
+
+
+BUILDING WITH ANT
+
+ 1. Open a terminal.
+ 2. cd to the source checkout.
+ 3. cp default.properties build.properties
+ 4. Edit build.properties to point to the location of your Android SDK.
+ 3. ant
+
+To install:
+ 1. ant install
+
+You'll need to run the app by hand, from the Applications launcher.
+
+
+RUNNING THE TESTS
+
+Currently, the tests must be run from the terminal.
+
+ 1. Make sure the Android SDK tools/ directory is in your PATH.
+ 2. cd to the source checkout.
+ 3. cd test
+ 4. ant
+ 5. adb -e class <test suite class you wish to run> \
+       -w org.mg8.pushr.droid.tests/android.test.InstrumentationTestRunner
