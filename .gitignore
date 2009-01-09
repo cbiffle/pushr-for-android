@@ -1,3 +1,6 @@
 bin
 src/org/mg8/pushr/droid/R.java
+src/org/mg8/pushr/droid/svc/IUploadCallback.java
+src/org/mg8/pushr/droid/svc/IUploadService.java
 res/values/secrets.xml
+

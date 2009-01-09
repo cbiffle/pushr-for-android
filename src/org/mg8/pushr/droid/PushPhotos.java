@@ -8,9 +8,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.AdapterView.OnItemClickListener;
 
-public class PushPhotos extends ListActivity implements OnItemClickListener {
+/**
+ * Presents a list of available camera photos and allows the user to push
+ * some or all of them.
+ *
+ * <p>Note: does not actually push yet.
+ *
+ * <p>This is the application's main activity.
+ *
+ * @author Cliff L. Biffle
+ */
+public class PushPhotos extends ListActivity {
   private Cursor cursor;
   private ListView listView;
   
@@ -33,7 +42,4 @@ public class PushPhotos extends ListActivity implements OnItemClickListener {
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
   }
 
-  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-  }
 }

@@ -16,6 +16,15 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+/**
+ * Communicates with the Upload Service to show the user the current progress
+ * and status.
+ *
+ * <p>This is also where {@code Intent}s to send a single image go, so that the
+ * user can watch the upload progress.
+ *
+ * @author Cliff L. Biffle
+ */
 public class CheckUploadStatus extends Activity {
 
   private TextView status;
@@ -33,6 +42,7 @@ public class CheckUploadStatus extends Activity {
     bindService(new Intent(IUploadService.class.getName()),
         uploadServiceConnection, BIND_AUTO_CREATE);
     
+	 // If we've received a send intent, forward it to the service.
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       startService(new Intent(this, UploadService.class)

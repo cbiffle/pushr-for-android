@@ -24,6 +24,12 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.widget.Toast;
 
+/**
+ * Implementation of the Upload Service.  This service fires up a thread in
+ * the background, queues upload requests, and processes them as it can.
+ *
+ * @author Cliff L. Biffle
+ */
 public class UploadService extends Service {
   /*
    * We manage our own queue instead of using Android's built-in equivalent
