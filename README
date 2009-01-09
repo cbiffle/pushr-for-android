@@ -72,6 +72,6 @@ Currently, the tests must be run from the terminal.
  1. Make sure the Android SDK tools/ directory is in your PATH.
  2. cd to the source checkout.
  3. cd test
- 4. ant
+ 4. ant install
  5. adb -e class <test suite class you wish to run> \
        -w org.mg8.pushr.droid.tests/android.test.InstrumentationTestRunner

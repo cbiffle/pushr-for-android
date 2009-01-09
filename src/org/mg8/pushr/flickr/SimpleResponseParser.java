@@ -48,6 +48,10 @@ public class SimpleResponseParser {
       return errCode;
     }
     
+    String getErrMessage() {
+      return errMessage;
+    }
+    
     @Override
     public void startElement(String uri, String localName, String name,
         Attributes atts) throws SAXException {

@@ -27,10 +27,7 @@ public class FlickrTest extends TestCase {
     // Generated manually using md5sum(1)
     final String expectedSig = "d65537be45d8f8c908405a03e3c24b0c";
     
-    ByteArrayOutputStream sink = new ByteArrayOutputStream(); 
-    flickr.signature(params).writeTo(sink);
-    byte[] sigBytes = sink.toByteArray();
-    String sig = new String(sigBytes);
+    String sig = flickr.signature(params);
     
     assertEquals(expectedSig, sig);
   }

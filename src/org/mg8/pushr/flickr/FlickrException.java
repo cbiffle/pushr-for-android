@@ -1,5 +1,6 @@
 package org.mg8.pushr.flickr;
 
+@SuppressWarnings("serial")
 public class FlickrException extends Exception {
   private final int errCode;
   

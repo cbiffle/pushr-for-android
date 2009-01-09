@@ -9,11 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.mg8.pushr.droid.ContentWriteable;
+import org.mg8.pushr.droid.AndroidContentBody;
 import org.mg8.pushr.droid.ImageStore;
+import org.mg8.pushr.droid.R;
 import org.mg8.pushr.flickr.Flickr;
 import org.mg8.pushr.flickr.FlickrException;
-import org.mg8.pushr.droid.R;
 
 import android.app.Service;
 import android.content.Intent;
@@ -114,7 +114,8 @@ public class UploadService extends Service {
           String name = c.getString(0);
           c.close();
           
-          ContentWriteable data = new ContentWriteable(imageStore, uri);
+          AndroidContentBody data = new AndroidContentBody(imageStore, uri,
+              name, "image/jpeg");
           data.setProgressListener(progress);
           currentName = name;
           Map<String, String> meta = new HashMap<String, String>();
@@ -152,8 +153,8 @@ public class UploadService extends Service {
   }
   
   volatile String currentName;
-  final ContentWriteable.ProgressListener progress =
-      new ContentWriteable.ProgressListener() {
+  final AndroidContentBody.ProgressListener progress =
+      new AndroidContentBody.ProgressListener() {
         @Override public void progressHasBeenMade(long bytes) {
           long soFar = bytesSent.addAndGet(bytes);
           long goal = bytesToSend.get();

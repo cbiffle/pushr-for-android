@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,6 +16,14 @@ import java.util.Map;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.SAXException;
 
 public class Flickr {
@@ -52,7 +59,6 @@ public class Flickr {
     allParams.put("api_sig", hexString.toString());
     
     URL url = new URL(FLICKR_SERVICE_URL + service + "/" + query(allParams));
-    System.out.println(url);
     URLConnection connection = url.openConnection();
     HttpURLConnection httpCon = (HttpURLConnection) connection;
     httpCon.setInstanceFollowRedirects(true);
@@ -86,29 +92,31 @@ public class Flickr {
     return query.toString();
   }
 
-  public void pushPhoto(String name, MultipartStream.Writeable data, Map<String, String> meta) throws IOException, FlickrException {
+  public void pushPhoto(String name, ContentBody photo, Map<String, String> meta) throws IOException, FlickrException {
     HashMap<String, String> params = new HashMap<String, String>();
     params.put("api_key", apiKey);
     params.put("auth_token", authToken);
     params.putAll(meta);
+    params.put("api_sig", signature(params));
    
-    URL url = new URL(FLICKR_UPLOAD_URL);
-    URLConnection connection = url.openConnection();
-    HttpURLConnection httpCon = (HttpURLConnection) connection;
-    httpCon.setRequestMethod("POST");
-    httpCon.setRequestProperty("Content-Type", MultipartStream.CONTENT_TYPE);
-    httpCon.setDoInput(true);
-    httpCon.setDoOutput(true);
+    MultipartEntity body = new MultipartEntity();
+    for (Map.Entry<String, String> entry : params.entrySet()) {
+      body.addPart(entry.getKey(), new StringBody(entry.getValue()));
+    }
     
-    httpCon.connect();
+    body.addPart("photo", photo);
     
-    sendRequestBody(name, data, params, httpCon.getOutputStream());
-    
-    InputStream in = connection.getInputStream();
+    HttpClient http = new DefaultHttpClient();
+    HttpPost post = new HttpPost(FLICKR_UPLOAD_URL);
+    post.setEntity(body);
+    HttpResponse response = http.execute(post);
+    HttpEntity responseEntity = response.getEntity();
+
+    InputStream in = responseEntity.getContent();
     try {
-      int response = SimpleResponseParser.checkForFailure(in);
-      if (response != 0) {
-        throw new FlickrException(response, "err " + response);
+      int code = SimpleResponseParser.checkForFailure(in);
+      if (code != 0) {
+        throw new FlickrException(code, "err " + code);
       }
     } catch (SAXException e) {
       // Treat as failure.
@@ -116,30 +124,17 @@ public class Flickr {
     }
   }
 
-  private void sendRequestBody(String name, MultipartStream.Writeable data,
-      HashMap<String, String> params, OutputStream out) throws IOException {
-    MultipartStream mime = new MultipartStream(out);
-    mime.writeMimeParts(params);
-    mime.writeMimePart("api_sig", signature(params));
-
-    mime.writeMimePart("photo", data,
-        "filename=\"" + name + "\"\r\nContent-Type: image/jpeg");
-    
-    mime.close();
-  }
-  
-  MultipartStream.Writeable signature(Map<String, String> parameters) {
+  String signature(Map<String, String> parameters) {
     final byte[] result = signParams(parameters);
-    return new MultipartStream.Writeable() {
-      @Override public void writeTo(OutputStream out) throws IOException {
-        for (byte bSigned : result) {
-          int b = bSigned & 0xFF;
-          if (b < 0x10) {
-            out.write('0');
-          }
-          out.write(Integer.toHexString(b).getBytes());
-        }
-      }};
+    StringBuilder hex = new StringBuilder();
+    for (byte bSigned : result) {
+      int b = bSigned & 0xFF;
+      if (b < 0x10) {
+        hex.append('0');
+      }
+      hex.append(Integer.toHexString(b));
+    }
+    return hex.toString();
   }
 
   private byte[] signParams(Map<String, String> parameters)

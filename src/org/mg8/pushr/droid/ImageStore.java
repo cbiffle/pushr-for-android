@@ -26,10 +26,6 @@ public class ImageStore {
     return resolver.openInputStream(uri);
   }
   
-  public ContentWriteable getImageWriteable(Uri uri) {
-    return new ContentWriteable(this, uri);
-  }
-  
   public long getImageSize(Uri uri) {
     Cursor c = getInfo(uri);
     c.moveToFirst();
