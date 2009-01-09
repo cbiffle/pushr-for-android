@@ -30,13 +30,17 @@ public class MultipartStreamTest extends TestCase {
         + "bar\r\n"
         + "--" + MultipartStream.MIME_BOUNDARY + "\r\n"
         + "Content-Disposition: form-data; name=\"x\"\r\n\r\n"
-        + "y\r\n";
+        + "y\r\n"
+        + "--" + MultipartStream.MIME_BOUNDARY + "\r\n"
+        + "--\r\n";
     byte[] expectedBytes = expected.getBytes();
     
     stream.writeMimeParts(params);
     stream.close();
     
     byte[] output = sink.toByteArray();
+    
+    assertEquals(expected, new String(output));
     
     assertEquals(expectedBytes.length, output.length);
     for (int i = 0; i < expectedBytes.length; i++) {
