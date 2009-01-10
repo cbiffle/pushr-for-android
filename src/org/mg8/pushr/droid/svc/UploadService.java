@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.mg8.pushr.droid.AndroidContentBody;
 import org.mg8.pushr.droid.ImageStore;
 import org.mg8.pushr.droid.R;
-import org.mg8.pushr.flickr.Flickr;
+import org.mg8.pushr.flickr.FlickrRest;
 import org.mg8.pushr.flickr.FlickrException;
 
 import android.app.Service;
@@ -45,7 +45,7 @@ public class UploadService extends Service {
   private Thread uploadThread;
   
   ImageStore imageStore;
-  Flickr flickr;
+  FlickrRest flickr;
   
   final AtomicLong bytesToSend = new AtomicLong(0), bytesSent = new AtomicLong(0);
   
@@ -61,7 +61,7 @@ public class UploadService extends Service {
     }
     
     imageStore = new ImageStore(getContentResolver());
-    flickr = new Flickr(apiKey, sharedSecret, authToken);
+    flickr = new FlickrRest(apiKey, sharedSecret, authToken);
     
     threadRunning = true;
     uploadThread = new Thread(new UploadLoop());

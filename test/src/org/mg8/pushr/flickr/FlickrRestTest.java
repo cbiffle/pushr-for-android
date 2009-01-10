@@ -1,21 +1,20 @@
 package org.mg8.pushr.flickr;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-public class FlickrTest extends TestCase {
+public class FlickrRestTest extends TestCase {
   private static final String API_KEY = "API_KEY",
       SHARED_SECRET = "SHARED_SECRET",
       AUTH_TOKEN = "AUTH_TOKEN";
   
-  private Flickr flickr;
+  private FlickrRest flickr;
   
   @Override protected void setUp() throws Exception {
     super.setUp();
     
-    flickr = new Flickr(API_KEY, SHARED_SECRET, AUTH_TOKEN);
+    flickr = new FlickrRest(API_KEY, SHARED_SECRET, AUTH_TOKEN);
   }
   
   public void testSignature() throws Exception {
