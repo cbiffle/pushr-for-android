@@ -18,4 +18,8 @@
 <string name="auth_intro_button">Authorize Pushr on flickr.com</string>
 <string name="auth_complete_button">Yay!  Take me to Pushr!</string>
 <string name="auth_error_button">Try to authorize again</string>
+<string name="about_menu">About...</string>
+<string name="about_heading">About Pushr</string>
+<string name="about_text">Pushr makes it fast and easy to push photos from your Android-powered phone to Flickr.  You can use Pushr's Big Red Button to push all new photos in one step, or choose <i>Share</i> in the Camera or Pictures app to push single photos quickly.</string>
+<string name="about_attrib">Pushr for Android is Copyright 2009 Cliff L. Biffle and is open-source software under the Apache License 2.0.  The original Pushr for iPhone is Copyright 2007-8 Chris Lee.  Android is a trademark of Google, Inc.  Flickr is a trademark of Yahoo, Inc.  Get involved at http://github.com/cbiffle/pushr-for-android/</string>
 </resources>

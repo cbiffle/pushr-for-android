@@ -23,6 +23,8 @@
         <activity android:name=".AuthorizePushr"
                   android:label="@string/auth_heading">
         </activity>
+        <activity android:name=".AboutPushr">
+        </activity>
     	<service android:name=".svc.UploadService" android:label="Pushr Upload Service">
     		<intent-filter>
     			<action android:name="org.mg8.pushr.droid.svc.IUploadService" />

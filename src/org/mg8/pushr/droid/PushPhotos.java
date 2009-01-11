@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Thumbnails;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -19,6 +21,8 @@ import android.widget.SimpleCursorAdapter;
  * @author Cliff L. Biffle
  */
 public class PushPhotos extends ListActivity {
+  private static final int MENU_ABOUT = 1;
+  
   private Cursor cursor;
   private ListView listView;
   
@@ -50,6 +54,22 @@ public class PushPhotos extends ListActivity {
         finish(); // No Pushr for you.
       }
     }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    menu.add(0, MENU_ABOUT, 0, R.string.about_menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+    case MENU_ABOUT:
+      startActivity(new Intent(this, AboutPushr.class));
+      return true;
+    }
+    return false;
   }
   
   
