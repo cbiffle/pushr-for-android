@@ -42,21 +42,37 @@ public class CheckUploadStatus extends Activity {
     bindService(new Intent(IUploadService.class.getName()),
         uploadServiceConnection, BIND_AUTO_CREATE);
     
-	 // If we've received a send intent, forward it to the service.
+    if (!AuthUtil.updateAuthIfNeeded(this)) {
+      processSendIntent();
+    }    
+  }
+  
+  private void processSendIntent() {
+    // If we've received a send intent, forward it to the service.
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       startService(new Intent(this, UploadService.class)
           .putExtra(Intent.EXTRA_STREAM, intent.getParcelableExtra(Intent.EXTRA_STREAM)));
     }
-    
   }
   
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == AuthUtil.REQUEST_CODE) {
+      if (resultCode == RESULT_OK) {
+        processSendIntent();
+      } else {
+        finish();
+      }
+    }
+  }
+
   @Override
   protected void onDestroy() {
     super.onDestroy();
     unbindService(uploadServiceConnection);
-  }
-
+  } 
+ 
   private final IUploadCallback uploadCallback = new IUploadCallback.Stub() {
     @Override public void statusUpdate(String file, final int position, final int end)
         throws RemoteException {

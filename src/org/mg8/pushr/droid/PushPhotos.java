@@ -1,6 +1,7 @@
 package org.mg8.pushr.droid;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Thumbnails;
@@ -38,6 +39,19 @@ public class PushPhotos extends ListActivity {
     
     listView.setItemsCanFocus(false);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+    
+    AuthUtil.updateAuthIfNeeded(this);
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == AuthUtil.REQUEST_CODE) {
+      if (resultCode == RESULT_CANCELED) {
+        finish(); // No Pushr for you.
+      }
+    }
+  }
+  
+  
+  
 }
