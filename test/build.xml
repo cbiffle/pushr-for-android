@@ -37,6 +37,13 @@
         <os family="windows"/>
     </condition>
 
+    <property name="main-libs" value="../libs" />
+    <condition property="main-libs-ospath"
+            value="${basedir}\${main-libs}"
+            else="${basedir}/${main-libs}" >
+        <os family="windows"/>
+    </condition>
+
     <!-- folder for the native libraries -->
     <property name="native-libs" value="libs" />
     <condition property="native-libs-ospath"
@@ -150,6 +157,7 @@
                 bootclasspath="${android-jar}">
             <classpath>
                 <fileset dir="${external-libs}" includes="*.jar"/>
+                <fileset dir="${main-libs}" includes="*.jar"/>
             </classpath>
          </javac>
     </target>
@@ -162,6 +170,7 @@
             <arg value="--output=${intermediate-dex-ospath}" />
             <arg path="${outdir-ospath}" />
             <fileset dir="${external-libs}" includes="*.jar"/>
+            <fileset dir="${main-libs}" includes="*.jar"/>
         </apply>
     </target>
 
@@ -227,6 +236,8 @@
             <arg value="${srcdir-ospath}" />
             <arg value="-rj" />
             <arg value="${external-libs-ospath}" />
+            <arg value="-rj" />
+            <arg value="${main-libs-ospath}" />
             <arg value="-nf" />
             <arg value="${native-libs-ospath}" />
         </exec>
@@ -247,6 +258,8 @@
             <arg value="${srcdir-ospath}" />
             <arg value="-rj" />
             <arg value="${external-libs-ospath}" />
+            <arg value="-rj" />
+            <arg value="${main-libs-ospath}" />
             <arg value="-nf" />
             <arg value="${native-libs-ospath}" />
         </exec>

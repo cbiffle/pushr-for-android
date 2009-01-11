@@ -9,6 +9,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore.Images.ImageColumns;
 
+/**
+ * Encapsulates most of our interactions with {@link ContentResolver}.
+ * Mostly, this gives us a nice clean boundary for mocks.
+ * 
+ * @author Cliff L. Biffle
+ */
 public class ImageStore {
   private final ContentResolver resolver;
   
