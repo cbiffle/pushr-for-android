@@ -78,18 +78,20 @@ public class CheckUploadStatus extends Activity {
     @Override public void statusUpdate(String file, final int position, final int end)
         throws RemoteException {
       final String msg;
+      final int viz;
       if (file == null) {
         msg = getString(R.string.no_upload);
-        progressBar.setVisibility(View.INVISIBLE);
+        viz = View.INVISIBLE;
       } else {
         msg = getString(R.string.uploading, file);
-        progressBar.setVisibility(View.VISIBLE);
+        viz = View.VISIBLE;
       }
       mainThread.post(new Runnable() {
         @Override public void run() {
           status.setText(msg);
           progressBar.setMax(end);
           progressBar.setProgress(position);
+          progressBar.setVisibility(viz);
         }});
     }}; 
 
