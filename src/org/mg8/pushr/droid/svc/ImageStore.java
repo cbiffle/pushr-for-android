@@ -1,6 +1,5 @@
 package org.mg8.pushr.droid.svc;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -30,15 +29,6 @@ public class ImageStore {
   
   public InputStream openImage(Uri uri) throws FileNotFoundException {
     return resolver.openInputStream(uri);
-  }
-  
-  public long getImageSize(Uri uri) {
-    Cursor c = getInfo(uri);
-    c.moveToFirst();
-    String filename = c.getString(c.getColumnIndexOrThrow(ImageColumns.DATA));
-    c.close();
-    
-    return new File(filename).length();
   }
   
   /**

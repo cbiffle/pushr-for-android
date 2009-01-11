@@ -8,39 +8,36 @@ import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.content.AbstractContentBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.james.mime4j.MimeException;
-import org.mg8.pushr.droid.svc.ImageStore;
-
-import android.net.Uri;
 
 /**
- * An implementation of {@link ContentBody} that pulls its data from
- * Android's ContentResolver and sends out progress reports.
+ * An implementation of {@link ContentBody} that streams data from
+ * an {@link InputStream} and sends progress reports as it does so.
  * 
  * @author Cliff L. Biffle
  */
 public class AndroidContentBody extends AbstractContentBody {
   private static final int CHUNK_SIZE = 1024;
   
-  private final ImageStore imageStore;
-  private final Uri contentUri;
-  private final String displayName;
+  private final String filename;
+  private final long lengthInBytes;
+  private final Openable stream;
   
   private ProgressListener progress = new ProgressListener() {
     @Override public void progressHasBeenMade(long bytes) {
       // I don't care!
     }};
   
-  public AndroidContentBody(ImageStore imageStore, Uri contentUri,
-      String displayName, String mimeType) {
+  public AndroidContentBody(String filename, long lengthInBytes, String mimeType,
+      Openable stream) {
     super(mimeType);
-    this.imageStore = imageStore;
-    this.contentUri = contentUri;
-    this.displayName = displayName;
+    this.filename = filename;
+    this.lengthInBytes = lengthInBytes;
+    this.stream = stream;
   }
 
   @Override public void writeTo(OutputStream out, int mode)
       throws IOException, MimeException {
-    InputStream in = imageStore.openImage(contentUri);
+    InputStream in = stream.open();
     try {
       byte[] chunk = new byte[CHUNK_SIZE];
       while (true) {
@@ -57,7 +54,7 @@ public class AndroidContentBody extends AbstractContentBody {
 
   @Override
   public String getFilename() {
-    return displayName;
+    return filename;
   }
 
   @Override public String getCharset() {
@@ -65,7 +62,7 @@ public class AndroidContentBody extends AbstractContentBody {
   }
 
   @Override public long getContentLength() {
-    return imageStore.getImageSize(contentUri);
+    return lengthInBytes;
   }
 
   @Override public String getTransferEncoding() {

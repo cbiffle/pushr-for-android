@@ -1,6 +1,8 @@
 package org.mg8.pushr.droid.svc;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.widget.Toast;
 
 /**
@@ -81,7 +84,7 @@ public class UploadService extends Service {
     message.obj = intent.getParcelableExtra(Intent.EXTRA_STREAM);
     message.arg1 = startId;
     
-    bytesToSend.addAndGet(imageStore.getImageSize((Uri) message.obj));
+    bytesToSend.addAndGet(getImageSize((Uri) message.obj));
     messageQueue.offer(message);
   }
 
@@ -89,6 +92,16 @@ public class UploadService extends Service {
   public IBinder onBind(Intent intent) {
     return binder;
   }
+  
+  private long getImageSize(Uri uri) {
+    Cursor c = imageStore.getInfo(uri);
+    c.moveToFirst();
+    String path = c.getString(c.getColumnIndexOrThrow(ImageColumns.DATA));
+    long imageSize = new File(path).length();
+    c.close();
+    return imageSize;
+  }
+  
   private final IUploadService.Stub binder = new IUploadService.Stub() {
     @Override public void registerCallback(IUploadCallback callback)
         throws RemoteException {
@@ -104,16 +117,21 @@ public class UploadService extends Service {
       while (threadRunning) {
         try {          
           Message m = messageQueue.take();
-          Uri uri = (Uri) m.obj;
+          final Uri uri = (Uri) m.obj;
           int token = m.arg1;
     
           Cursor c = imageStore.getInfo(uri);
           c.moveToFirst();
-          String name = c.getString(0);
+          String name = c.getString(c.getColumnIndexOrThrow(ImageColumns.DISPLAY_NAME));
+          String path = c.getString(c.getColumnIndexOrThrow(ImageColumns.DATA));
+          long imageSize = new File(path).length();
           c.close();
           
-          AndroidContentBody data = new AndroidContentBody(imageStore, uri,
-              name, "image/jpeg");
+          AndroidContentBody data = new AndroidContentBody(name, imageSize, "image/jpeg",
+              new Openable() {
+                @Override public InputStream open() throws IOException {
+                  return imageStore.openImage(uri);
+                }});
           data.setProgressListener(progress);
           currentName = name;
           Map<String, String> meta = new HashMap<String, String>();
