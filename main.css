@@ -42,6 +42,10 @@ div#header a:visited {
 	font-weight: bold;
 }
 
+div#content {
+	margin-left: 130px;
+}
+
 div#footer {
 	clear: both;
 	margin-top: 2em;
