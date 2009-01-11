@@ -8,6 +8,7 @@ import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.content.AbstractContentBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.james.mime4j.MimeException;
+import org.mg8.pushr.droid.svc.ImageStore;
 
 import android.net.Uri;
 

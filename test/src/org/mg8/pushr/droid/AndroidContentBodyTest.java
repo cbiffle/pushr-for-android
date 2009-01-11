@@ -3,18 +3,17 @@ package org.mg8.pushr.droid;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.entity.mime.MIME;
-import org.apache.james.mime4j.MimeException;
-import org.mg8.pushr.droid.AndroidContentBody.ProgressListener;
-
-import android.content.ContentResolver;
-import android.net.Uri;
 import junit.framework.TestCase;
+
+import org.apache.http.entity.mime.MIME;
+import org.mg8.pushr.droid.AndroidContentBody.ProgressListener;
+import org.mg8.pushr.droid.svc.ImageStore;
+
+import android.net.Uri;
 
 public class AndroidContentBodyTest extends TestCase {
   private static final int LENGTH = 42;

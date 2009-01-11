@@ -10,10 +10,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.mg8.pushr.droid.AndroidContentBody;
-import org.mg8.pushr.droid.ImageStore;
 import org.mg8.pushr.droid.R;
-import org.mg8.pushr.flickr.FlickrRest;
 import org.mg8.pushr.flickr.FlickrException;
+import org.mg8.pushr.flickr.FlickrRest;
 
 import android.app.Service;
 import android.content.Intent;
