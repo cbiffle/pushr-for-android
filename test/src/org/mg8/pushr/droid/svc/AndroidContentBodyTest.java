@@ -1,4 +1,4 @@
-package org.mg8.pushr.droid;
+package org.mg8.pushr.droid.svc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,8 +10,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.http.entity.mime.MIME;
-import org.mg8.pushr.droid.AndroidContentBody.ProgressListener;
-import org.mg8.pushr.droid.svc.ImageStore;
+import org.mg8.pushr.droid.svc.AndroidContentBody.ProgressListener;
 
 import android.net.Uri;
 

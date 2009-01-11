@@ -1,4 +1,4 @@
-package org.mg8.pushr.droid;
+package org.mg8.pushr.droid.svc;
 
 import java.io.IOException;
 import java.io.InputStream;
