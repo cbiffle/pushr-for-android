@@ -11,4 +11,11 @@
 <string name="upload_heading">Upload Status</string>
 <string name="uploading">Uploading %s</string>
 <string name="no_upload">No upload in progress.</string>
+<string name="auth_heading">Authorization</string>
+<string name="auth_intro">Before you can use Pushr, you must <i>authorize</i> it to upload pictures to your Flickr account.  Pushr will never ask for or store your password.  Instead, press the button below to log into flickr.com and learn more.</string>
+<string name="auth_complete">You\'re all set!  Press the button below to use Pushr.</string>
+<string name="auth_error">Hm.  It looks like the authorization process didn't work.  Press the button below to retry.</string>
+<string name="auth_intro_button">Authorize Pushr on flickr.com</string>
+<string name="auth_complete_button">Yay!  Take me to Pushr!</string>
+<string name="auth_error_button">Try to authorize again</string>
 </resources>
