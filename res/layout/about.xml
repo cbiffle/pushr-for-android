@@ -12,13 +12,17 @@
       android:paddingTop="6sp"
       />
 
-  <TextView android:text="@string/about_text"
+  <TextView android:id="@+id/about_text"
+      android:text="@string/about_text"
+      android:autoLink="web"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:paddingTop="6sp"
       />
   
-  <TextView android:text="@string/about_attrib"
+  <TextView android:id="@+id/about_attrib"
+      android:autoLink="web"
+      android:text="@string/about_attrib"
       style="?android:attr/textAppearanceSmall"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
