@@ -6,10 +6,17 @@ import java.io.OutputStream;
 
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.content.AbstractContentBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.james.mime4j.MimeException;
 
 import android.net.Uri;
 
+/**
+ * An implementation of {@link ContentBody} that pulls its data from
+ * Android's ContentResolver and sends out progress reports.
+ * 
+ * @author Cliff L. Biffle
+ */
 public class AndroidContentBody extends AbstractContentBody {
   private static final int CHUNK_SIZE = 1024;
   
@@ -68,7 +75,13 @@ public class AndroidContentBody extends AbstractContentBody {
     progress = progressListener;
   }
 
+  /**
+   * Interface for callbacks interested in receiving progress reports.
+   */
   public interface ProgressListener {
+    /**
+     * Indicates that another {@code bytes} of data have been sent.
+     */
     void progressHasBeenMade(long bytes);
   }
 }
