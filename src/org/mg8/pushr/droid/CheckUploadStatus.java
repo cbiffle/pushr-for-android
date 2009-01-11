@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -79,8 +80,10 @@ public class CheckUploadStatus extends Activity {
       final String msg;
       if (file == null) {
         msg = getString(R.string.no_upload);
+        progressBar.setVisibility(View.INVISIBLE);
       } else {
         msg = getString(R.string.uploading, file);
+        progressBar.setVisibility(View.VISIBLE);
       }
       mainThread.post(new Runnable() {
         @Override public void run() {

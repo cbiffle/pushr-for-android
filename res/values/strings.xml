@@ -2,6 +2,8 @@
 <resources>
     <string name="hello">Hello World, PushPhotos</string>
     <string name="app_name">Pushr</string>
+<string name="new_photos">New photos to upload:</string>
+<string name="big_red_button">Push New Photos to Flickr!</string>
 <string name="token">Token:</string>
 <string name="upload_error">Flickr has reported an error with your upload (code %d, %s)</string>
 <string name="upload_fail">Your upload failed, probably due to network issues (%s)</string>

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<ListView android:id="@android:id/list"
+
+<TableRow>
+  <TextView android:text="@string/new_photos"
+      android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		style="?android:attr/textAppearanceLarge"/>
+  <TextView android:id="@+id/new_photos"
+      android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		style="?android:attr/textAppearanceLarge"/>
+</TableRow>
+
+<Button android:id="@+id/big_red_button"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-	android:choiceMode="multipleChoice"/>
-</LinearLayout>
+	 android:layout_height="wrap_content"
+	 android:text="@string/big_red_button"
+     android:textSize="20sp"/>
+
+
+</TableLayout>
