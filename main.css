@@ -1,0 +1,49 @@
+body, td, th {
+	font-family: sans-serif;
+}
+
+div#header {
+	background-color: #333333;
+	color: white;
+}
+div#header img {
+	float: left;
+}
+
+div#header div {
+	display: inline;
+}
+
+div#header h1 {
+	display: inline;
+}
+
+div#header ol {
+	display: inline;
+	padding-left: 0px;
+	margin-left: 0px;
+}
+div#header li {
+	display: inline;
+	padding-left: 2em;
+}
+
+div#header a:link {
+	color: #9999FF;
+	font-weight: bold;
+}
+
+div#header a:visited {
+	color: #FF99FF;
+	font-weight: bold;
+}
+
+div#footer {
+	clear: both;
+	margin-top: 2em;
+	border-top: 1px solid #333333;
+	padding-top: 1em;
+	font-size: 80%;
+	color: #333333;
+	text-align: center;
+}
