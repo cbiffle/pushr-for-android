@@ -18,10 +18,6 @@ API key is used only for official Pushr builds.
 
 To obtain your own for development, see Flickr's developer site -- it's free.
 
-For the moment, Pushr for Android is unable to do the auth handshake and obtain
-an auth token unassisted.  You'll need to do this manually, a process which is
-outside the scope of this document.
-
 Once you have all this info, create a file at res/values/secrets.xml using the
 following template:
 
@@ -29,7 +25,6 @@ following template:
   <resources>
     <string name="api_key">YOUR_API_KEY</string>
 	 <string name="shared_secret">YOUR_SHARED_SECRET</string>
-    <string name="auth_token">YOUR_AUTH_TOKEN</string>
   </resources>
 
 
