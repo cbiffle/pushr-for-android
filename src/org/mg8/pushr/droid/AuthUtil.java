@@ -1,6 +1,7 @@
 package org.mg8.pushr.droid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
@@ -50,5 +51,10 @@ public class AuthUtil {
     } else {
       return false;
     }
+  }
+
+  public static String getStoredToken(Context caller) {
+    SharedPreferences prefs = caller.getSharedPreferences(AUTH_PREFS, 0);
+    return prefs.getString(PREF_TOKEN, null);
   }
 }

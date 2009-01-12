@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.mg8.pushr.droid.R;
+import org.mg8.pushr.droid.AuthUtil;
 import org.mg8.pushr.flickr.FlickrException;
 import org.mg8.pushr.flickr.FlickrRest;
 
@@ -55,9 +56,9 @@ public class UploadService extends Service {
     
     String apiKey = getString(R.string.api_key);
     String sharedSecret = getString(R.string.shared_secret);
-    String authToken = getString(R.string.auth_token);
+    String authToken = AuthUtil.getStoredToken(this);
     
-    if (apiKey == null || sharedSecret == null || authToken == null) {
+    if (apiKey == null || sharedSecret == null) {
       Toast.makeText(this, "Did you forget secrets.xml?", Toast.LENGTH_LONG).show();
     }
     
